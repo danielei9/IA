@@ -25,16 +25,21 @@ def add_client(clients_list,nif,name,address,phone,email):
       phone
       email
     """
-    clients_list[nif] = {
+    dicTemp = dict()
+    dicTemp = {
         nif: {'name': name,
               'address': address,
               'phone': phone,
               'email': email
         }
     }
+    clients_list[nif] = dicTemp[nif]
+
 
 def repartir_cartas(cartas_iniciales,repeticiones):
-    """Dada una baraja de cartas iniciales y un número de repeticiones, esta función selecciona 5 cartas aleatorias de esta baraja y las mete en un diccionario llamado combinaciones. El proceso se repite tantas veces como repeticiones se indiquen.
+    """Dada una baraja de cartas iniciales y un número de repeticiones, 
+    esta función selecciona 5 cartas aleatorias de esta baraja y las mete en 
+    un diccionario llamado combinaciones. El proceso se repite tantas veces como repeticiones se indiquen.
     Args:
       cartas_iniciales
       repeticiones
