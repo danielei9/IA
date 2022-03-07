@@ -12,16 +12,14 @@
 ; 4º (runDev) 
 ; 5º (run) 
 
-; the gen represent the number of generations the code makes
+; the gen represent the number of generations the code makes 
 (defglobal ?*gen* = 0)
 
 ;table
 (deffacts table
     (ground rows 5 cols 8)
     (package 4 5)
-    (origin 2 2) ;; check that
     (finish 1 3)
-
 )
 
 ; blocks
@@ -45,8 +43,8 @@
     ?f1 <- (robot $?lastPos p ?row ?col going $?go buck ?stateBuck level ?level)
     (maxDeep ?maxDeep)
     (ground rows ?numRows $?)
-    (not (block =(+ ?row 1) ?col))
-    (test (< ?row ?numRows))
+    (not (block =(+ ?row 1) ?col)); not a block
+    (test (< ?row ?numRows)) ;must be in the table
     (test (< ?level ?maxDeep))    ; We can go one level deeper? 
     (test (not (member$ (create$ p (+ ?row 1) ?col) $?lastPos)))  ;its not the same as later
     =>
@@ -147,7 +145,6 @@
 	;    then    (?keyNThings 1)
 	;    else    (?keyNThings 0)
     ;)
-	(printout t "Put maxDeep level: ")
     (bind ?b (read))
 	(if (= ?b 1)
 	    then    (set-strategy breadth)
