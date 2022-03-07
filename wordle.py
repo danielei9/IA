@@ -1,3 +1,4 @@
+import random
 def choose_secret(filename):
     """Dado un nombre de fichero, esta función devuelve una palabra aleatoria de este fichero transformada a mayúsculas.
     Args:
@@ -5,7 +6,7 @@ def choose_secret(filename):
     Returns:
       secret: Palabra elegida aleatoriamente del fichero transformada a mayúsculas. Ej. "CREMA"
     """
-    f = open(filename + ".txt", mode="rt", encoding="utf-8")
+    f = open("./" +filename + ".txt", mode="rt", encoding="utf-8")
     wordList = []
     for linea in f:
       wordList.append(linea)
@@ -27,8 +28,9 @@ def compare_words(word,secret):
     secret = secret.upper()
     same_position = []
     same_letter = []
+    indexToDelete = []
 
-    for i in len(word):
+    for i in range(0,len(word)):
       #si coincide la posicion y la letra
       if(word[i] == secret[i]):
         same_position.append(i)
@@ -37,8 +39,13 @@ def compare_words(word,secret):
         if(word[i] == secretLetter):
           same_letter.append(i)
     for i in same_position:
-      if same_position[i] == same_letter[i]:
+      print("i" + str(i))
+      print(same_position)
+      print(same_letter)
+      if (same_letter[i] == same_position[i]):
         #eliminar elementos repetidos en las 2 listas
+        indexToDelete.append(i)
+    for i in indexToDelete:
         same_letter.pop(i)
     return same_position, same_letter
 
@@ -96,14 +103,18 @@ def check_valid_word(selected,word):
     Returns:
       word: Palabra introducida por el usuario que está en la lista.
     """
-
+    while(True):
+      word = input("(check_valid_word():99) - Palabra a checkear: ")
+      for wordInList in selected:
+        if(word.upper() == wordInList.upper()):
+          return word
 
 if __name__ == "__main__":
-    secret=choose_secret()
+    secret=choose_secret("palabras_extended")
     print("Palabra a adivinar: "+secret)#Debug: esto es para que sepas la palabra que debes adivinar
     for repeticiones in range(0,6):
         word = input("Introduce una nueva palabra: ")
-        same_position, same_letter = compare_words()
+        same_position, same_letter = compare_words(word,secret)
         resultado=print_word()
         print(resultado)
         if word == secret:
