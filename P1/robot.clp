@@ -20,7 +20,7 @@
     (ground rows 5 cols 8)
     (package 4 5)
     (origin 2 2) ;; check that
-    (final 1 3)
+    (finish 1 3)
 
 )
 
@@ -40,15 +40,36 @@
     (robot p 4 1 going buck 0 level 0)
 )
 
-
+;main function => runDev()
+(deffunction main()
+    (reset)
+	(printout t "Put maxDeep level: ")
+	(bind ?maxDeep (read))
+	(printout t "Strategy?:" crlf "  1.- Breadth  2.- Depth" crlf )
+    ;CREO QUE NO ME DA TIEMPO
+	;(printout t "you want put N packages and N sites?: 1 Yes/0 No ")
+    ;(bind ?keyNThings (read))
+	;(if (= ?keyNThings 1)
+	;    then    (?keyNThings 1)
+	;    else    (?keyNThings 0)
+    ;)
+	(printout t "Put maxDeep level: ")
+    (bind ?b (read))
+	(if (= ?b 1)
+	    then    (set-strategy breadth)
+	    else    (set-strategy depth)
+    )
+    (assert (maxDeep ?maxDeep))
+    (run)
+)
 
 ; Rule down
 (defrule down
     ?f1 <- (robot $?lastPos p ?row ?col going $?go buck ?stateBuck level ?level)
     (maxDeep ?maxDeep)
-    (ground rows ?num_rows $?)
+    (ground rows ?numRows $?)
     (not (block =(+ ?row 1) ?col))
-    (test (< ?row ?num_rows))
+    (test (< ?row ?numRows))
     (test (< ?level ?maxDeep))    ; We can go one level deeper? 
     (test (not (member$ (create$ p (+ ?row 1) ?col) $?lastPos)))  ;its not the same as later
     =>
@@ -106,11 +127,40 @@
 (defrule takeBox
     (declare (salience 70))
     ?f2 <- (robot $?lastPos p ?row ?col going $?go buck 0 level ?level)
-    (package ?row_package ?col_package)
-    (test (and (= ?row ?row_package) (= ?col ?col_package)))
+    (package ?rowPackage ?colPackage)
+    (test (and (= ?row ?rowPackage) (= ?col ?colPackage)))
     =>
     (printout t "¡TAKE PACKAGE!" crlf)
     (printout t "package by " ?f2 " in level: " ?level crlf)
     (assert (robot p ?row ?col going $?lastPos p ?row ?col buck 1 level ?level))
     (bind ?*gen* (+ ?*gen* 1))
 )
+
+
+; FinishedOK
+(defrule finishedOK
+    (declare (salience 100))
+    ?f3 <- (robot $?lastPos p ?row ?col going $?go buck 0 level ?level)
+    (finish ?rowFinish ?colFinish)
+    (test (and (= ?row ?rowFinish) (= ?col ?colFinish)))
+    =>
+    (printout t "package DONE" crlf)
+    (printout t "level: " ?level crlf)
+	(printout t "by: " ?f3 crlf)
+    (printout t "way:"  crlf)
+    (printout t "  - going: " $?go crlf)
+    (printout t "  - return: " $?lastPos  ?row " " ?col  crlf)
+	(printout t "RULES: " ?*gen* crlf)
+    (halt)
+)
+
+
+; Not solutions
+(defrule notSol
+	(declare (salience -77))
+    =>
+	(printout t "No solutions" crlf)
+	(printout t "in generations n: " ?*gen* crlf)
+	(halt)
+)
+
