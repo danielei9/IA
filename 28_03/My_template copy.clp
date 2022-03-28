@@ -19,9 +19,9 @@
 (deffacts init
     (manzana 5)
     (naranja 5)
-    (caquis 5)
+    (caqui 5)
     (uva 5)
-    (lineaPedido manzana 0 naranja 0 caquis 0 uva 0)
+    (lineaPedido manzana 0 naranja 0 caqui 0 uva 0) ; lo que se encuentra ya en el deposito de cajas del pedido
 )
 
 ; pedido
@@ -36,7 +36,7 @@
     ?f1 <- (pedido manzana ?cantPedido)
     (manzana ?stockManzana)
     (test (<= ?cantPedido ?stockManzana)); Comprozamos si hay suficientes manzana
-    (lineaPedido $?w manzana ?manzanaLinea $?y)
+    (lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea)
 
      => ; si hay suficientes manzana ir a por ellas
 
@@ -44,9 +44,9 @@
    
     (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
     (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de manzana ya esta hecho
-    (retract(lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
+    (retract(lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea))
 
-    (assert (lineaPedido manzana (+ ?cantPedido ?manzanaLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert (lineaPedido manzana (+ ?cantPedido ?manzanaLinea) naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea)) ; actualizar la linea con pedido
     (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
 )
 
@@ -54,55 +54,57 @@
     ?f1 <- (pedido naranja ?cantPedido)
     (naranja ?stockNaranja)
     (test (<= ?cantPedido ?stockNaranja)); Comprozamos si hay suficientes naranjas
-    (lineaPedido $?w naranja ?naranjaLinea $?y)
+    (lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea)
 
      => ; si hay suficientes naranjas ir a por ellas
 
     (println "Ir a por " ?cantPedido  " naranjas " )
    
-    (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
-    (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de naranjas ya esta hecho
-    (retract(lineaPedido manzana ?naranjasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
+    (retract  (naranja ?stockNaranja)) ; eliminar stock para actualizar 
+    (retract(pedido naranja ?cantPedido )) ; eliminar anterior pedido de naranjas ya esta hecho
+    (retract(lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea))
 
-    (assert (lineaPedido manzana (+ ?cantPedido ?naranjasLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
-    (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
+    (assert (lineaPedido manzana ?manzanaLinea naranja (+ ?cantPedido ?naranjaLinea) caqui ?caquiLinea uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert ((naranja (- ?stockNaranja ?cantPedido)))) ; actualizar stock
 )
 
-(defrule irAPorManzanas
-    ?f1 <- (pedido manzana ?cantPedido)
-    (manzana ?stockManzana)
-    (test (<= ?cantPedido ?stockManzana)); Comprozamos si hay suficientes manzanas
-    (lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)
+(defrule irAPorCaqui
+    ?f1 <- (pedido caqui ?cantPedido)
+    (caqui ?stockCaqui)
+    (test (<= ?cantPedido ?stockCaqui)); Comprozamos si hay suficientes caqui
+    (lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea)
 
-     => ; si hay suficientes manzanas ir a por ellas
+     => ; si hay suficientes caqui ir a por ellas
 
-    (println "Ir a por " ?cantPedido  " Manzanas " )
+    (println "Ir a por " ?cantPedido  " caqui " )
    
-    (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
-    (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de manzanas ya esta hecho
-    (retract(lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
+    (retract  (caqui ?stockCaqui)) ; eliminar stock para actualizar 
+    (retract(pedido caqui ?cantPedido )) ; eliminar anterior pedido de caqui ya esta hecho
+    (retract(lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea))
 
-    (assert (lineaPedido manzana (+ ?cantPedido ?manzanasLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
-    (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
+    (assert (lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui (+ ?cantPedido ?caquiLinea ) uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert ((caqui (- ?stockCaqui  ?cantPedido)))) ; actualizar stock
 )
 
-(defrule irAPorManzanas
-    ?f1 <- (pedido manzana ?cantPedido)
-    (manzana ?stockManzana)
-    (test (<= ?cantPedido ?stockManzana)); Comprozamos si hay suficientes manzanas
-    (lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)
 
-     => ; si hay suficientes manzanas ir a por ellas
+(defrule irAPorNaranjas
+    ?f1 <- (pedido naranja ?cantPedido)
+    (naranja ?stockNaranja)
+    (test (<= ?cantPedido ?stockNaranja)); Comprozamos si hay suficientes naranjas
+    (lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea)
 
-    (println "Ir a por " ?cantPedido  " Manzanas " )
+     => ; si hay suficientes naranjas ir a por ellas
+
+    (println "Ir a por " ?cantPedido  " naranjas " )
    
-    (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
-    (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de manzanas ya esta hecho
-    (retract(lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
+    (retract  (naranja ?stockNaranja)) ; eliminar stock para actualizar 
+    (retract(pedido naranja ?cantPedido )) ; eliminar anterior pedido de naranjas ya esta hecho
+    (retract(lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea))
 
-    (assert (lineaPedido manzana (+ ?cantPedido ?manzanasLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert (lineaPedido manzana ?manzanaLinea naranja (+ ?cantPedido ?naranjaLinea) caqui ?caquiLinea uva ?uvaLinea)) ; actualizar la linea con pedido
     (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
 )
+
 ; Not solutions
 (defrule notSol
 	(declare (salience -77))
