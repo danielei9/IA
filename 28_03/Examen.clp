@@ -21,7 +21,9 @@
     (naranja 5)
     (caqui 5)
     (uva 5)
-    (lineaPedido manzana 0 naranja 0 caqui 0 uva 0) ; lo que se encuentra ya en el deposito de cajas del pedido
+    
+    ; lo que se encuentra ya en el deposito de cajas del pedido
+    (lineaPedido manzana 0 naranja 0 caqui 0 uva 0) 
 )
 
 ; pedido
@@ -87,68 +89,44 @@
 )
 
 
-(defrule irAPorNaranjas
-    ?f1 <- (pedido naranja ?cantPedido)
-    (naranja ?stockNaranja)
-    (test (<= ?cantPedido ?stockNaranja)); Comprozamos si hay suficientes naranjas
+(defrule irAPorUvas
+    ?f1 <- (pedido uva ?cantPedido)
+    (uva ?stockUva)
+    (test (<= ?cantPedido ?stockUva)); Comprozamos si hay suficientes uva
     (lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea)
 
-     => ; si hay suficientes naranjas ir a por ellas
+     => ; si hay suficientes uva ir a por ellas
 
-    (println "Ir a por " ?cantPedido  " naranjas " )
+    (println "Ir a por " ?cantPedido  " uva " )
    
-    (retract  (naranja ?stockNaranja)) ; eliminar stock para actualizar 
-    (retract(pedido naranja ?cantPedido )) ; eliminar anterior pedido de naranjas ya esta hecho
+    (retract  (uva ?stockUva)) ; eliminar stock para actualizar 
+    (retract(pedido uva ?cantPedido )) ; eliminar anterior pedido de naranjas ya esta hecho
     (retract(lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva ?uvaLinea))
 
-    (assert (lineaPedido manzana ?manzanaLinea naranja (+ ?cantPedido ?naranjaLinea) caqui ?caquiLinea uva ?uvaLinea)) ; actualizar la linea con pedido
-    (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
+    (assert (lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caqui ?caquiLinea uva  (+ ?cantPedido ?uvaLinea))) ; actualizar la linea con pedido
+    (assert ((uva (- ?stockUva ?cantPedido)))) ; actualizar stock
 )
 
 ; Not solutions
-(defrule notSol
+(defrule noStock
 	(declare (salience -77))
     =>
-	(printout t "No solutions" crlf)
-	(printout t "in generations n: " ?*gen* crlf)
+	(printout t "No Stock" crlf)
 	(halt)
 )
 
 ; FinishedOK
 (defrule finishedOK
     (declare (salience 100))
-    ?f3 <- (robot $?lastPos p ?row ?col going $?go buck 0 level ?level)
-    (finish ?rowFinish ?colFinish)
-    (test (and (= ?row ?rowFinish) (= ?col ?colFinish)))
+    ?f3 <- (pedido $?w)
+    (not (test  (> (length $?w) 0)))
     =>
-    (printout t "package DONE" crlf)
-    (printout t "level: " ?level crlf)
-	(printout t "by: " ?f3 crlf)
-    (printout t "way:"  crlf)
-    (printout t "  - going: " $?go crlf)
-    (printout t "  - return: " $?lastPos  ?row " " ?col  crlf)
-	(printout t "RULES: " ?*gen* crlf)
+    (printout t " DONE" crlf)
     (halt)
 )
 
 ;main function => runDev()
 (deffunction main()
     (reset)
-	(printout t "Put maxDeep level: ")
-	(bind ?maxDeep (read))
-	(printout t "Strategy?:" crlf "  1.- Breadth  2.- Depth" crlf )
-    ;CREO QUE NO ME DA TIEMPO
-	;(printout t "you want put N packages and N sites?: 1 Yes/0 No ")
-    ;(bind ?keyNThings (read))
-	;(if (= ?keyNThings 1)
-	;    then    (?keyNThings 1)
-	;    else    (?keyNThings 0)
-    ;)
-    (bind ?b (read))
-	(if (= ?b 1)
-	    then    (set-strategy breadth)
-	    else    (set-strategy depth)
-    )
-    (assert (maxDeep ?maxDeep))
     (run)
 )
