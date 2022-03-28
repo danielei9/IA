@@ -32,81 +32,77 @@
 )
 
 (defrule )
-; Rule down
+(defrule irAPorManzanas
+    ?f1 <- (pedido manzana ?cantPedido)
+    (manzana ?stockManzana)
+    (test (<= ?cantPedido ?stockManzana)); Comprozamos si hay suficientes manzana
+    (lineaPedido $?w manzana ?manzanaLinea $?y)
+
+     => ; si hay suficientes manzana ir a por ellas
+
+    (println "Ir a por " ?cantPedido  " Manzana " )
+   
+    (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
+    (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de manzana ya esta hecho
+    (retract(lineaPedido manzana ?manzanaLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
+
+    (assert (lineaPedido manzana (+ ?cantPedido ?manzanaLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
+)
+
+(defrule irAPorNaranjas
+    ?f1 <- (pedido naranja ?cantPedido)
+    (naranja ?stockNaranja)
+    (test (<= ?cantPedido ?stockNaranja)); Comprozamos si hay suficientes naranjas
+    (lineaPedido $?w naranja ?naranjaLinea $?y)
+
+     => ; si hay suficientes naranjas ir a por ellas
+
+    (println "Ir a por " ?cantPedido  " naranjas " )
+   
+    (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
+    (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de naranjas ya esta hecho
+    (retract(lineaPedido manzana ?naranjasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
+
+    (assert (lineaPedido manzana (+ ?cantPedido ?naranjasLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
+)
+
 (defrule irAPorManzanas
     ?f1 <- (pedido manzana ?cantPedido)
     (manzana ?stockManzana)
     (test (<= ?cantPedido ?stockManzana)); Comprozamos si hay suficientes manzanas
-    
+    (lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)
+
      => ; si hay suficientes manzanas ir a por ellas
-    (println "Ir a por " (+ ?cantPedido 1) " Manzanas " )
-    (retract(pedido manzana ?cantPedido ))
 
+    (println "Ir a por " ?cantPedido  " Manzanas " )
+   
+    (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
+    (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de manzanas ya esta hecho
+    (retract(lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
 
-    (maxDeep ?maxDeep)
-    (ground rows ?numRows $?)
-    (not (block =(+ ?row 1) ?col)); not a block
-    (test (< ?level ?maxDeep))    ; We can go one level deeper? 
-    (test (not (member$ (create$ p (+ ?row 1) ?col) $?lastPos)))  ;its not the same as later
-    =>
-    ;(println "DOWN " (+ ?row 1) " col " ?col " buck = " ?stateBuck )
-    (assert (robot $?lastPos p ?row ?col p (+ ?row 1) ?col going $?go buck ?stateBuck level (+ ?level 1))) ; create assert with new position
-    (bind ?*gen* (+ ?*gen* 1)) ; add to gen counter +1
+    (assert (lineaPedido manzana (+ ?cantPedido ?manzanasLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
 )
 
-; Rule left
-(defrule left
-    ?f1 <- (robot $?lastPos p ?row ?col going $?go buck ?stateBuck level ?level)
-    (maxDeep ?maxDeep)
-    (not (block ?row =(- ?col 1)))
-    (test (> ?col 1))
-    (test (< ?level ?maxDeep))    
-    (test (not (member$ (create$ p ?row (- ?col 1)) $?lastPos)))   
-    =>
-    (assert (robot $?lastPos p ?row ?col p ?row (- ?col 1) going $?go buck ?stateBuck level (+ ?level 1)))
-    (bind ?*gen* (+ ?*gen* 1))
-)
+(defrule irAPorManzanas
+    ?f1 <- (pedido manzana ?cantPedido)
+    (manzana ?stockManzana)
+    (test (<= ?cantPedido ?stockManzana)); Comprozamos si hay suficientes manzanas
+    (lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)
 
-; Rule rigth
-(defrule rigth
-    ?f1 <- (robot $?lastPos p ?row ?col going $?go buck ?stateBuck level ?level)
-    (maxDeep ?maxDeep)
-    (ground $? cols ?num_cols)
-    (not (block ?row =(+ ?col 1)))
-    (test (< ?col ?num_cols))
-    (test (< ?level ?maxDeep))   
-    (test (not (member$ (create$ p ?row (+ ?col 1)) $?lastPos)))    
-    =>
-    (assert (robot $?lastPos p ?row ?col p ?row (+ ?col 1) going $?go buck ?stateBuck level (+ ?level 1)))
-    (bind ?*gen* (+ ?*gen* 1))
-)
+     => ; si hay suficientes manzanas ir a por ellas
 
-; Rule up
-(defrule up
-    ?f1 <- (robot $?lastPos p ?row ?col going $?go buck ?stateBuck level ?level)
-    (maxDeep ?maxDeep)
-    (not (block =(- ?row 1) ?col))
-    (test (> ?row 1))
-    (test (< ?level ?maxDeep)) 
-    (test (not (member$ (create$ p (- ?row 1) ?col) $?lastPos)))    
-    =>
-    (assert (robot $?lastPos p ?row ?col p (- ?row 1) ?col going $?go buck ?stateBuck level (+ ?level 1)))
-    (bind ?*gen* (+ ?*gen* 1))
-)
+    (println "Ir a por " ?cantPedido  " Manzanas " )
+   
+    (retract  (manzana ?stockManzana)) ; eliminar stock para actualizar 
+    (retract(pedido manzana ?cantPedido )) ; eliminar anterior pedido de manzanas ya esta hecho
+    (retract(lineaPedido manzana ?manzanasLinea naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea))
 
-; Rule take box
-(defrule takeBox
-    (declare (salience 70))
-    ?f2 <- (robot $?lastPos p ?row ?col going $?go buck 0 level ?level)
-    (package ?rowPackage ?colPackage)
-    (test (and (= ?row ?rowPackage) (= ?col ?colPackage)))
-    =>
-    (printout t "¡TAKE PACKAGE!" crlf)
-    (printout t "package by " ?f2 " in level: " ?level crlf)
-    (assert (robot p ?row ?col going $?lastPos p ?row ?col buck 1 level ?level))
-    (bind ?*gen* (+ ?*gen* 1))
+    (assert (lineaPedido manzana (+ ?cantPedido ?manzanasLinea) naranja ?naranjaLinea caquis ?caquisLinea uva ?uvaLinea)) ; actualizar la linea con pedido
+    (assert ((manzana (- ?stockManzana ?cantPedido)))) ; actualizar stock
 )
-
 ; Not solutions
 (defrule notSol
 	(declare (salience -77))
