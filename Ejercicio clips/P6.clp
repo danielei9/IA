@@ -11,7 +11,6 @@
 
 (defrule mesa-a-torre
     (mesa $?rest1 ?x $?rest3 torre $?rest1 ?y )
-    (test (> ?y ?x))
         =>      
     (assert (mesa $?rest1 $?rest3 torre $?rest1 ?y ?x ))
 )
