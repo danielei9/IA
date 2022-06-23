@@ -12,6 +12,8 @@
 ; 4º (runDev) 
 ; 5º (run) 
 
+;(facts) permite saber hechos 
+
 ; the gen represent the number of generations the code makes 
 (defglobal ?*gen* = 0)
 

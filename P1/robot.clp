@@ -13,7 +13,7 @@
 ; 5º (run) 
 
 ; the gen represent the number of generations the code makes 
-(defglobal ?*gen* = 0)
+(defglobal ?*gen* = 5)
 
 ;table
 (deffacts table
@@ -139,12 +139,9 @@
 	(bind ?maxDeep (read))
 	(printout t "Strategy?:" crlf "  1.- Breadth  2.- Depth" crlf )
     ;CREO QUE NO ME DA TIEMPO
-	;(printout t "you want put N packages and N sites?: 1 Yes/0 No ")
-    ;(bind ?keyNThings (read))
-	;(if (= ?keyNThings 1)
-	;    then    (?keyNThings 1)
-	;    else    (?keyNThings 0)
-    ;)
+	(printout t "you want put N packages and N sites?: 1 Yes/0 No ")
+    (bind ?keyNThings (read))
+	;(if (= ?keyNThings 1) then (?keyNThings 1) else (?keyNThings 0))
     (bind ?b (read))
 	(if (= ?b 1)
 	    then    (set-strategy breadth)
